@@ -17,10 +17,6 @@ cat data.json | jq .labels -c >> data.js
 echo -n "datasets = " >> data.js
 cat data.json | jq .datasets -c >> data.js
 
-cat tidy.index.html | sed "s/~~~LASTUPDATE~~~/$(basename $currentarchive)/" > lu.index.html
+cat tidy.index.html | sed "s/~~~LASTUPDATE~~~/$(basename $currentarchive)/" > index.html
 
-#cat index.pre > index.html
-#cat data.json >> index.html
-#cat index.post >> index.html
-
-which minify &>/dev/null && minify lu.index.html > index.html && rm lu.index.html
+which minify &>/dev/null && minify index.html > im.html && mv im.html index.html
