@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.6.0">
+<meta charset="utf-8">
+<title>Covid-19 7-Tagesinzidenz pro 100.000 Einwohner in ausgewählten Kreisen</title>
+
+<script src="Chart.min.js"></script>
+<script src="data.js"></script>
+<script src="js.js"></script>
+<link rel="stylesheet" type="text/css" href="css.css">
+</head>
+<body>
+<div>
+<canvas id="c" width="3" height="1"></canvas>
+</div>
+<div id="lk"></div>
+<script>
+var defaultLegendClickHandler = Chart.defaults.global.legend.onClick;
+
+var newLegendClickHandler = function (e, legendItem) {
+  var index = legendItem.datasetIndex;
+  var ci = this.chart;
+  var meta = ci.getDatasetMeta(index);
+  meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+  setCookie(legendItem.text, meta.hidden);
+  ci.update();
+}
+
+var ctx = document.getElementById('c');
+var cc = new Chart(ctx,{
+  type: 'line',
+  data: {
+    "labels": ["1"],
+    "datasets": [{
+      "label":"loading data","fill":false,"borderColor":"#00000","hidden":false,"data":[0,0]
+    }]},
+  options: {
+    legend: {
+      onClick: newLegendClickHandler
+    },
+    title: {
+      display: true,
+      text: 'Covid-19 7-Tagesinzidenz pro 100.000 Einwohner in ausgewählten Kreisen'
+    }
+  }
+});
+
+window.onload = function() {
+  datasets.forEach(showLandkreisInList)
+  cc.data.labels = labels;
+  el = document.getElementsByTagName("em");
+  for (var i = 0; i < el.length; i++) {
+    el[i].addEventListener('click', showDataInGraph);
+    visible = getCookie(el[i].id+"inGraph");
+    if (visible == "true") {
+      el[i].click();
+    }
+  }
+  cc.data.datasets.splice(0,1);
+  cc.data.datasets.forEach(setHiddenOnCookie);
+  cc.data.legend = { onClick: newLegendClickHandler }
+  cc.update();
+}
+</script>
+<hr>
+<div>
+<ul>
+<li>Man kann die Namen der Kreise anklicken und dann werden sie im Chart oben eingeblendet. Wenn sie dort sind, kann man direkt
+im Chart oben auf die Legende klicken und dann bleiben die Daten im Chart, werden aber ausgeblendet.</li>
+<li>Die Zusammenstellung wird mittels Cookie gespeichert (siehe unten).</li>
+<li>Die Reihenfolge ist abhängig davon, in welcher Reihenfolge man auf die Kreise klickt.</li>
+<li>Die Farben werden automatisch aus den Namen der Kreise errechnet.</li>
+<li>Die Sortierung der Kreise richtet sich nach der offiziellen Kreisid und ist mehr oder weniger geografisch geordnet.</li>
+<li>Am einfachsten findet man seinen eigenen Kreis vermutlich mit STRG+F und dann den Namen suchen.</li>
+<li>Einmal am Tag hole ich die Daten neu von Github (siehe unten) und generiere die Daten für das Chart neu.</li>
+<li>Die Webseite lädt die gesamten Daten von allen Landkreisen - damit ist zwar die Ladezeit etwas höher, aber danach die
+Webseite schnell. Insgesamt (stand 01/2021) ist diese Webseite kleiner als die Startseite von google.</li>
+</ul>
+</div>
+<hr>
+<div>Datenquelle: <a href="https://github.com/ard-data/2020-rki-archive">https://github.com/ard-data/2020-rki-archive</a>, ~~~LASTUPDATE~~~ <br>
+Javascriptbibliothek: <a href="https://www.chartjs.org/">https://www.chartjs.org</a>, Version 2.9.4
+<hr>
+Diese Webseite speichert mittels <a href="https://de.wikipedia.org/wiki/HTTP-Cookie">Cookies</a> die im Chart sichtbaren
+Landkreise, und ob sie im Chart ausgeblendet sind für 365 Tage. Ansonsten mache ich mit den Daten aus den Cookies nichts. In
+den Logdateien speichere <a href="https://de.wikipedia.org/wiki/IP-Adresse">IPs</a> und werte damit gelegentlich aus, wie oft
+meine Seite so aufgerufen wird und wie viel Daten sie überträgt. Ansonsten mache ich auch mit den IPs nix.<br>
+Wen es interessiert: <a href="https://eholtz.de">meine Homepage</a></div>
+</body>
+</html>

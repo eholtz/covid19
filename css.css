@@ -1,0 +1,18 @@
+div#lk {
+  column-count: 5;
+  margin-top: 1em;
+  font-family: serif;
+}
+
+em {
+  font-style: normal;
+  color: grey;
+  cursor: pointer;
+}
+
+em.s {
+  font-weight: bold;
+  color: seagreen;
+  font-family: sans-serif;
+}
+
