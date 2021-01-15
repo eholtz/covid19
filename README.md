@@ -5,5 +5,5 @@ These few scripts fetch the covid-19 data from germany once a day and generate a
 You can run the create-cronjob.sh shellscript to create a cronjob.
 
 # See it in action
-You can see it in action at (https://eholtz.de/covid19)
+You can see it in action at https://eholtz.de/covid19
 
