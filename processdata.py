@@ -27,32 +27,26 @@ with open ( jsonfile ) as f:
     counter=0
     ec=0
 
-    for dataobject in data:
+    for feature in data:
         try:
-            for feature in dataobject['features']:
-                try:
 #                print(json.dumps(feature,indent=True))
-                    if not feature["attributes"]["IdLandkreis"] in datadict:
-                        datadict[feature["attributes"]["IdLandkreis"]]={}
+            if not feature["IdLandkreis"] in datadict:
+                datadict[feature["IdLandkreis"]]={}
 
-                    if "Kreisname" not in datadict[feature["attributes"]["IdLandkreis"]]:
-                        datadict[feature["attributes"]["IdLandkreis"]]["Kreisname"] = feature["attributes"]["Landkreis"]
-                    if "AnzahlFall" not in datadict[feature["attributes"]["IdLandkreis"]]:
-                        datadict[feature["attributes"]["IdLandkreis"]]["AnzahlFall"] = {}
+            if "Kreisname" not in datadict[feature["IdLandkreis"]]:
+                datadict[feature["IdLandkreis"]]["Kreisname"] = feature["Landkreis"]
+            if "AnzahlFall" not in datadict[feature["IdLandkreis"]]:
+                datadict[feature["IdLandkreis"]]["AnzahlFall"] = {}
 
-                    if feature["attributes"]["Meldedatum"] in datadict[feature["attributes"]["IdLandkreis"]]["AnzahlFall"]:
-                        datadict[feature["attributes"]["IdLandkreis"]]["AnzahlFall"][feature["attributes"]["Meldedatum"]]+=feature["attributes"]["AnzahlFall"]
-                    else:
-                        datadict[feature["attributes"]["IdLandkreis"]]["AnzahlFall"][feature["attributes"]["Meldedatum"]]=feature["attributes"]["AnzahlFall"]
-                    counter+=1
-                except:
-                    ec+=1
-                    print("Feature parse error")
-                    print(json.dumps(feature,indent=True),file=sys.stderr)
-                    pass
+            if feature["Meldedatum"] in datadict[feature["IdLandkreis"]]["AnzahlFall"]:
+                datadict[feature["IdLandkreis"]]["AnzahlFall"][feature["Meldedatum"]]+=feature["AnzahlFall"]
+            else:
+                datadict[feature["IdLandkreis"]]["AnzahlFall"][feature["Meldedatum"]]=feature["AnzahlFall"]
+            counter+=1
         except:
-            print("Dataobject without features")
-            print(json.dumps(dataobject,indent=True),file=sys.stderr)
+            ec+=1
+            print("Feature parse error")
+            print(json.dumps(feature,indent=True),file=sys.stderr)
             pass
 
 #print(json.dumps(datadict,indent=True))
