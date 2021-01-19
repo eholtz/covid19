@@ -8,7 +8,7 @@ cd $bwd
 cd 2020-rki-archive
 git pull &>/dev/null || echo "git pull failed. please check."
 cd $bwd
-currentarchive=$(find 2020-rki-archive/data/0_archived/ -type f -size +5M | sort  | tail -n 1)
+currentarchive=$(find 2020-rki-archive/data/2_parsed/ -type f -size +5M | sort  | tail -n 1)
 bzcat $currentarchive > current.json
 
 python3 processdata.py > data.json
