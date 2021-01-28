@@ -3,8 +3,10 @@ import time
 import csv
 import hashlib
 import sys
+import os
+import re
 
-jsonfile="current.json"
+datadir="data-aligned"
 einwohnercsvfile="kreiseinwohner.csv"
 
 kreisdaten = {}
@@ -16,61 +18,36 @@ with open ( einwohnercsvfile ) as csvfile:
         kreisdaten[row[0]]=int(row[2])
         lksearchlist.append(row[0]);
 
-tagemitdaten = []
+resultset={}
+tagemitdaten={}
+kreisnames={}
 
 # read data
-with open ( jsonfile ) as f:
-    data = json.load(f)
-    resultset = {}
-    datadict = {}
+files = os.listdir(datadir)
+for file in files:
+    # read the kreisnames if it is the kreisname file
+    if re.match(r'kreisname\.json',file):
+        with open ( datadir + "/" + file ) as jsonfile:
+            data = json.load(jsonfile)
+            for entry in data:
+                kreisnames[entry["attributes"]["IdLandkreis"]]=entry["attributes"]["Landkreis"]
+    # read the infection numbers if it is a kreisdata file
+    if re.match(r'[0-9]{5}\.json',file):
+        # this is a file named [kreisid].json
+        kreisid=file[0:5]
+        resultset[kreisid]={}
+        resultset[kreisid]["AnzahlFall"]={}
+        resultset[kreisid]["Einwohner"]=kreisdaten[kreisid]
+        with open ( datadir + "/" + file ) as jsonfile:
+            data = json.load(jsonfile)
+            for entry in data:
+                datestring = time.strftime('%d.%m.%Y', time.localtime(entry["attributes"]["Meldedatum"]/1000))
+                resultset[kreisid]["AnzahlFall"][datestring]=entry["attributes"]["AnzahlFallAlle"]
+                tagemitdaten[entry["attributes"]["Meldedatum"]]=True
 
-    counter=0
-    ec=0
-
-    for feature in data:
-        try:
-#                print(json.dumps(feature,indent=True))
-            if not feature["IdLandkreis"] in datadict:
-                datadict[feature["IdLandkreis"]]={}
-
-            if "Kreisname" not in datadict[feature["IdLandkreis"]]:
-                datadict[feature["IdLandkreis"]]["Kreisname"] = feature["Landkreis"]
-            if "AnzahlFall" not in datadict[feature["IdLandkreis"]]:
-                datadict[feature["IdLandkreis"]]["AnzahlFall"] = {}
-
-            if feature["Meldedatum"] in datadict[feature["IdLandkreis"]]["AnzahlFall"]:
-                datadict[feature["IdLandkreis"]]["AnzahlFall"][feature["Meldedatum"]]+=feature["AnzahlFall"]
-            else:
-                datadict[feature["IdLandkreis"]]["AnzahlFall"][feature["Meldedatum"]]=feature["AnzahlFall"]
-            counter+=1
-        except:
-            ec+=1
-            print("Feature parse error")
-            print(json.dumps(feature,indent=True),file=sys.stderr)
-            pass
-
-#print(json.dumps(datadict,indent=True))
-#print(counter,ec)
-
-#quit()
-
-for idlandkreis in sorted(lksearchlist):
-    try:
-        resultset[idlandkreis]={}
-        resultset[idlandkreis]["AnzahlFall"]={}
-        resultset[idlandkreis]["Einwohner"]=kreisdaten[idlandkreis]
-        resultset[idlandkreis]["Kreisname"]=datadict[idlandkreis]["Kreisname"]
-        for key in sorted(datadict[idlandkreis]["AnzahlFall"]):
-            if key not in tagemitdaten:
-                tagemitdaten.append(key)
-            resultset[idlandkreis]["AnzahlFall"][time.strftime('%d.%m.%Y', time.localtime(key/1000))] = datadict[idlandkreis]["AnzahlFall"][key]
-    except:
-        print(idlandkreis,file=sys.stderr)
-        pass
-
-#            pass
-
-#print(json.dumps(resultset,indent=True))
+# fill in all the kreisnames
+for kreisid in resultset:
+    resultset[kreisid]["Kreisname"]=kreisnames[kreisid]
 
 # create a list with all days
 # this will serve as label for the final graph and to check if
@@ -78,9 +55,6 @@ for idlandkreis in sorted(lksearchlist):
 labels = []
 for tag in sorted(tagemitdaten):
     labels.append(time.strftime('%d.%m.%Y', time.localtime(tag/1000)))
-
-
-# print(resultset)
 
 # go through all kreise for a first time to fill in gaps we might have
 # so the calculation of inzidenzwert will not be off
@@ -95,8 +69,6 @@ for landkreiskey in resultset:
         except:
             pass
     resultset[landkreiskey]["AnzahlFallNoGaps"]=nogapdict
-
-#print(json.dumps(resultset,indent=True))
 
 # we can now be sure to have data for each single day we want to calculate
 # so we go ahead and fill the chart data datasets
