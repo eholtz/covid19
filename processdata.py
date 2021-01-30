@@ -24,7 +24,7 @@ kreisnames={}
 
 # read data
 files = os.listdir(datadir)
-for file in files:
+for file in sorted(files):
     # read the kreisnames if it is the kreisname file
     if re.match(r'kreisname\.json',file):
         with open ( datadir + "/" + file ) as jsonfile:
