@@ -16,11 +16,17 @@ with open ( einwohnercsvfile ) as csvfile:
     reader = csv.reader(csvfile, delimiter=';')
     for row in reader:
         kreisdaten[row[0]]=int(row[2])
-        lksearchlist.append(row[0]);
+        lksearchlist.append(row[0])
 
 resultset={}
 tagemitdaten={}
 kreisnames={}
+
+# we will calculate germanys overall inzidenzwert
+resultset["BRD"]={}
+resultset["BRD"]["Einwohner"]=0
+resultset["BRD"]["AnzahlFall"]={}
+resultset["BRD"]["Kreisname"]="BRD Gesamt"
 
 # read data
 files = os.listdir(datadir)
@@ -44,10 +50,17 @@ for file in sorted(files):
                 datestring = time.strftime('%d.%m.%Y', time.localtime(entry["attributes"]["Meldedatum"]/1000))
                 resultset[kreisid]["AnzahlFall"][datestring]=entry["attributes"]["AnzahlFallAlle"]
                 tagemitdaten[entry["attributes"]["Meldedatum"]]=True
+                # add to the grand total. first assignment will fail, so in this case just write the value
+                try:
+                    resultset["BRD"]["AnzahlFall"][datestring]+=entry["attributes"]["AnzahlFallAlle"]
+                except:
+                    resultset["BRD"]["AnzahlFall"][datestring]=entry["attributes"]["AnzahlFallAlle"]
 
-# fill in all the kreisnames
+# fill in all the kreisnames - and while we're at it: compute the grand total of the population
 for kreisid in resultset:
-    resultset[kreisid]["Kreisname"]=kreisnames[kreisid]
+    if kreisid!="BRD":
+        resultset[kreisid]["Kreisname"]=kreisnames[kreisid]
+        resultset["BRD"]["Einwohner"]+=kreisdaten[kreisid]
 
 # create a list with all days
 # this will serve as label for the final graph and to check if
@@ -93,7 +106,7 @@ for landkreiskey in resultset:
         sds = 0
         for num in sevendays:
             sds += num
-        sdi = round(100000/kreisdaten[landkreiskey]*sds)
+        sdi = round(100000/resultset[landkreiskey]["Einwohner"]*sds)
         dataset["data"].append(sdi)
 
     chartdata["datasets"].append(dataset)
