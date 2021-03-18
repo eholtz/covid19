@@ -6,3 +6,4 @@ for file in $(find ./data -iname "*.json"); do
   cat $file | jq -c .features > data-aligned/$(basename $file)
 done
 
+find data-aligned/ -size -5k -delete
