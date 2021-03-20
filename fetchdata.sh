@@ -2,7 +2,7 @@
 
 # ensure data dir is there and remove old files
 mkdir -p data
-find data/ -name "*.json" -mmin +240
+find data/ -name "*.json" -mmin +240 -delete
 
 # number of retries
 retries=5
