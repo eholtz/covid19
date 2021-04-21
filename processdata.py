@@ -101,6 +101,7 @@ for landkreiskey in resultset:
     dataset["label"] = resultset[landkreiskey]["Kreisname"]
     dataset["fill"] = False
     dataset["borderColor"] = "#"+hashlib.sha1(dataset["label"].encode('utf-8')).hexdigest()[0:6]
+    dataset["backgroundColor"] = "#"+hashlib.sha1(dataset["label"].encode('utf-8')).hexdigest()[0:6]
     dataset["hidden"] = False
     dataset["data"] = []
     sevendays = []
