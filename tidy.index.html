@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.16">
   <meta charset="utf-8">
@@ -9,71 +10,80 @@
   <script src="js.js"></script>
   <link rel="stylesheet" type="text/css" href="css.css">
 </head>
+
 <body>
   <div>
     <canvas id="c" width="3" height="1"></canvas>
   </div>
   <div id="lk"></div>
   <script>
-  var defaultLegendClickHandler = Chart.defaults.plugins.legend.onClick;
+    var defaultLegendClickHandler = Chart.defaults.plugins.legend.onClick;
 
-  var newLegendClickHandler = function (e, legendItem) {
-  var index = legendItem.datasetIndex;
-  var ci = this.chart;
-  var meta = ci.getDatasetMeta(index);
-  meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
-  setCookie(legendItem.text, meta.hidden);
-  ci.update();
-  }
-
-  var ctx = document.getElementById('c');
-  var cc = new Chart(ctx,{
-  type: 'line',
-  data: {
-    "labels": ["1"],
-    "datasets": [{
-      "label":"loading data","fill":false,"borderColor":"#00000","hidden":false,"data":[0,0]
-    }]},
-  options: {
-    legend: {
-      onClick: newLegendClickHandler
-    },
-    title: {
-      display: true,
-      text: 'Covid-19 7-Tagesinzidenz pro 100.000 Einwohner in ausgewählten Kreisen'
+    var newLegendClickHandler = function (e, legendItem) {
+      var index = legendItem.datasetIndex;
+      var ci = this.chart;
+      var meta = ci.getDatasetMeta(index);
+      meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+      setCookie(legendItem.text, meta.hidden);
+      ci.update();
     }
-  }
-  });
 
-  window.onload = function() {
-  datasets.forEach(showLandkreisInList)
-  cc.data.labels = labels;
-  el = document.getElementsByTagName("em");
-  for (var i = 0; i < el.length; i++) {
-    el[i].addEventListener('click', showDataInGraph);
-    visible = getCookie(el[i].id+"inGraph");
-    if (visible == "true") {
-      el[i].click();
+    var ctx = document.getElementById('c');
+    var cc = new Chart(ctx, {
+      type: 'line',
+      data: {
+        "labels": ["1"],
+        "datasets": [{
+          "label": "loading data", "fill": false, "borderColor": "#00000", "hidden": false, "data": [0, 0]
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            onClick: newLegendClickHandler
+          }
+        },
+        title: {
+          display: true,
+          text: 'Covid-19 7-Tagesinzidenz pro 100.000 Einwohner in ausgewählten Kreisen'
+        }
+      }
+    });
+
+    window.onload = function () {
+      datasets.forEach(showLandkreisInList)
+      cc.data.labels = labels;
+      el = document.getElementsByTagName("em");
+      for (var i = 0; i < el.length; i++) {
+        el[i].addEventListener('click', showDataInGraph);
+        visible = getCookie(el[i].id + "inGraph");
+        if (visible == "true") {
+          el[i].click();
+        }
+      }
+      cc.data.datasets.splice(0, 1);
+      cc.data.datasets.forEach(setHiddenOnCookie);
+      cc.data.legend = { onClick: newLegendClickHandler }
+      cc.update();
     }
-  }
-  cc.data.datasets.splice(0,1);
-  cc.data.datasets.forEach(setHiddenOnCookie);
-  cc.data.legend = { onClick: newLegendClickHandler }
-  cc.update();
-  }
   </script>
   <hr>
   <div>
     <ul>
-      <li>Man kann die Namen der Kreise anklicken, dann werden sie im Chart oben eingeblendet. Wenn sie dort sind, kann man direkt im Chart oben auf die Legende klicken. Sie bleiben im Chart, werden aber ausgeblendet.</li>
+      <li>Man kann die Namen der Kreise anklicken, dann werden sie im Chart oben eingeblendet. Wenn sie dort sind, kann
+        man direkt im Chart oben auf die Legende klicken. Sie bleiben im Chart, werden aber ausgeblendet.</li>
       <li>Die Zusammenstellung wird mittels Cookie gespeichert (siehe unten).</li>
       <li>Die Reihenfolge ist abhängig davon, in welcher Reihenfolge man auf die Kreise klickt.</li>
       <li>Die Farben werden automatisch aus den Namen der Kreise generiert.</li>
-      <li>Die Sortierung der Kreise richtet sich nach der offiziellen Kreisid und ist mehr oder weniger geografisch geordnet.</li>
+      <li>Die Sortierung der Kreise richtet sich nach der offiziellen Kreisid und ist mehr oder weniger geografisch
+        geordnet.</li>
       <li>Am einfachsten findet man seinen eigenen Kreis vermutlich mit STRG+F und dann den Namen suchen.</li>
       <li>Einmal am Tag frage ich die Daten vom 2020-rki-archive von github ab (siehe unten).</li>
-      <li>Meine Inzidenzdaten weichen leicht von den RKI-Daten ab, da das RKI das Erkrankungsdatum als Basis nimmt und ich das Meldedatum.</li>
-      <li>Die Webseite lädt die gesamten Daten von allen Landkreisen - damit ist zwar die Ladezeit etwas höher, aber danach die Webseite schnell. Insgesamt (stand 01/2021) ist diese Webseite kleiner als die Startseite von google.</li>
+      <li>Meine Inzidenzdaten weichen leicht von den RKI-Daten ab, da das RKI das Erkrankungsdatum als Basis nimmt und
+        ich das Meldedatum.</li>
+      <li>Die Webseite lädt die gesamten Daten von allen Landkreisen - damit ist zwar die Ladezeit etwas höher, aber
+        danach die Webseite schnell. Insgesamt (stand 01/2021) ist diese Webseite kleiner als die Startseite von google.
+      </li>
     </ul>
   </div>
   <hr>
@@ -85,16 +95,23 @@
         <a href="https://github.com/ard-data/2020-rki-archive">2020-rki-archive</a>, ~~~LASTUPDATE~~~
       </li>
       <li>
-        <a href="https://www-genesis.destatis.de/">https://www-genesis.destatis.de</a>, suche nach "Bevölkerung: Kreise, Stichtag"
+        <a href="https://www-genesis.destatis.de/">https://www-genesis.destatis.de</a>, suche nach "Bevölkerung: Kreise,
+        Stichtag"
       </li>
       <li>
-        <a href="https://www.statistik-berlin-brandenburg.de/regionalstatistiken/r-gesamt_neu.asp?Ptyp=410&amp;Sageb=12015&amp;creg=BBB&amp;anzwer=6">https://www.statistik-berlin-brandenburg.de/</a>
+        <a
+          href="https://www.statistik-berlin-brandenburg.de/regionalstatistiken/r-gesamt_neu.asp?Ptyp=410&amp;Sageb=12015&amp;creg=BBB&amp;anzwer=6">https://www.statistik-berlin-brandenburg.de/</a>
       </li>
     </ul>Javascriptbibliothek: <a href="https://www.chartjs.org/">https://www.chartjs.org</a>, Version 3.1.1<br>
     <hr>
-    Diese Webseite speichert mittels <a href="https://de.wikipedia.org/wiki/HTTP-Cookie">Cookies</a> die im Chart sichtbaren Landkreise, und ob sie im Chart ausgeblendet sind, für 365 Tage. Ansonsten mache ich mit den Daten aus den Cookies nichts. In den Logdateien landen <a href="https://de.wikipedia.org/wiki/IP-Adresse">IPs</a> und ich werte damit gelegentlich aus, wie oft meine Seite so aufgerufen wird und wie viel Daten sie überträgt. Ansonsten mache ich auch mit den IPs nix.<br>
+    Diese Webseite speichert mittels <a href="https://de.wikipedia.org/wiki/HTTP-Cookie">Cookies</a> die im Chart
+    sichtbaren Landkreise, und ob sie im Chart ausgeblendet sind, für 365 Tage. Ansonsten mache ich mit den Daten aus
+    den Cookies nichts. In den Logdateien landen <a href="https://de.wikipedia.org/wiki/IP-Adresse">IPs</a> und ich
+    werte damit gelegentlich aus, wie oft meine Seite so aufgerufen wird und wie viel Daten sie überträgt. Ansonsten
+    mache ich auch mit den IPs nix.<br>
     Wen es interessiert: <a href="https://eholtz.de">meine Homepage</a>.<br>
     Den Source für alles das hier gibt es auch auf <a href="https://github.com/eholtz/covid19">Github</a>.
   </div>
 </body>
+
 </html>
