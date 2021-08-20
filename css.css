@@ -1,7 +1,20 @@
 div#lk {
-  column-count: 5;
+  column-count: 4;
   margin-top: 1em;
   font-family: serif;
+}
+
+div.bl {
+  border: 1px solid burlywood;
+  border-radius: 0.2em;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  background-color: cornsilk;
+  break-inside: avoid;
+}
+
+div.bl h2 {
+  margin-top: 0;
 }
 
 em {

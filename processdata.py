@@ -99,6 +99,7 @@ for landkreiskey in resultset:
     if "Kreisname" not in resultset[landkreiskey]:
         continue
     dataset["label"] = resultset[landkreiskey]["Kreisname"]
+    dataset["kreisid"] = landkreiskey
     dataset["fill"] = False
     dataset["borderColor"] = "#"+hashlib.sha1(dataset["label"].encode('utf-8')).hexdigest()[0:6]
     dataset["backgroundColor"] = "#"+hashlib.sha1(dataset["label"].encode('utf-8')).hexdigest()[0:6]

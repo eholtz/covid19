@@ -1,5 +1,24 @@
-
 // setCookie and getCookie taken from https://www.w3schools.com/js/js_cookies.asp
+
+bundeslaender={
+  "BR":"Gesamt",
+  "01":"Schleswig-Holstein",
+  "02":"Hamburg",
+  "03":"Niedersachsen",
+  "04":"Bremen",
+  "05":"Nordrhein-Westfalen",
+  "06":"Hessen",
+  "07":"Rheinland-Pfalz",
+  "08":"Baden-Württemberg",
+  "09":"Bayern",
+  "10":"Saarland",
+  "11":"Berlin",
+  "12":"Brandenburg",
+  "13":"Mecklenburg-Vorpommern",
+  "14":"Sachsen",
+  "15":"Sachsen-Anhalt",
+  "16":"Thüringen"
+}
 
 function setCookie(cname, cvalue, exdays = 365) {
   var d = new Date();
@@ -58,7 +77,16 @@ function showDataInGraph() {
 }
 
 function showLandkreisInList(item, index) {
-  document.getElementById('lk').innerHTML = document.getElementById('lk').innerHTML + " <div class=b><em id=\"" + item.label + "\">" + item.label + "</em></div>";
+  blid = item.kreisid.substring(0,2);
+  bldiv = document.getElementById(blid);
+  if (!bldiv) {
+    bldiv = document.createElement('div');
+    bldiv.id = blid;
+    bldiv.classList.add("bl");
+    bldiv.innerHTML = "<h2>" + bundeslaender[blid] + "</h2>";
+    document.getElementById('lk').appendChild(bldiv);
+  }
+  bldiv.innerHTML = bldiv.innerHTML + " <div class=b><em id=\"" + item.label + "\">" + item.label + "</em></div>";
 }
 
 
