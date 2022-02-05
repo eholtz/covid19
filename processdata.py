@@ -29,11 +29,11 @@ resultset["BRD"]["AnzahlFall"] = {}
 resultset["BRD"]["Kreisname"] = "BRD Gesamt"
 
 # read data new
-from pprint import pprint
 with open ( datadir + "/data-current.ndjson" ) as ndjsonfile:
     for jsonstring in ndjsonfile:
         jsonobject = json.loads(jsonstring)
         kreisid = jsonobject['IdLandkreis']
+        kreisid = "{:0>5}".format(kreisid)
         meldedatum = jsonobject['MeldedatumISO']
         anzahlfall = jsonobject['AnzahlFall']
         kreisname = jsonobject['Landkreis']
